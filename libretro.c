@@ -12,7 +12,7 @@
 #define YBITMAP 50
 // Pitch = longueur en octets entre 2 lignes du buffer vidéo
 #define PITCH (2 * XBITMAP)
-// Fréquence processeur
+// Fréquence processeur (1MHz)
 #define PROC_FREQ 1000000
 // Nombre d'instructions exécutées pendant la durée d'une frame vidéo
 #define NB_INSTR_PER_FRAME (PROC_FREQ / VIDEO_FPS)
@@ -132,17 +132,19 @@ void retro_set_controller_port_device(unsigned port, unsigned device)
 
 size_t retro_serialize_size(void)
 {
-  return 0;
+  return emul_serialize_size();
 }
 
 bool retro_serialize(void *data, size_t size)
 {
-  return false;
+  emul_serialize(data, size);
+  return true;
 }
 
 bool retro_unserialize(const void *data, size_t size)
 {
-  return false;
+  emul_unserialize(data, size);
+  return true;
 }
 
 void retro_cheat_reset(void)

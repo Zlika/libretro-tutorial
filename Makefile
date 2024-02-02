@@ -1,5 +1,5 @@
 TARGET := mon_emu_libretro.so
-CFLAGS := -fPIC -D__LIBRETRO__ -Wall -std=c99
+CFLAGS := -fPIC -Wall -std=c99
 INCDIRS := -I.
 SHARED := -shared -Wl,-version-script=link.T -Wl,-no-undefined
 
