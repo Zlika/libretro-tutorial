@@ -2,3 +2,5 @@
 *.so
 *.bin
 *.pyc
+.project
+.pydevproject

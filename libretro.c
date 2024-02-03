@@ -62,10 +62,37 @@ void retro_set_environment(retro_environment_t env)
 void retro_init(void)
 {
   video_buffer = (unsigned short *)ram;
+
+  struct retro_input_descriptor desc[] = {
+        { 0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_A,     "A" },
+        { 0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_B,     "B" },
+        { 0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_X,     "X" },
+        { 0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_Y,     "Y" },
+        { 0, 0, 0, 0, 0 },
+  };
+  environ_cb(RETRO_ENVIRONMENT_SET_INPUT_DESCRIPTORS, desc);
+}
+
+static void keyboard_cb(bool down, unsigned keycode,
+    uint32_t character, uint16_t key_modifiers)
+{
+  if (down)
+  {
+    ram[KEYBOARD_ADDR] = (keycode & 0xFF00) >> 8;
+    ram[KEYBOARD_ADDR+1] = keycode & 0x00FF;
+  }
+  else
+  {
+    ram[KEYBOARD_ADDR] = 0;
+    ram[KEYBOARD_ADDR+1] = 0;
+  }
 }
 
 bool retro_load_game(const struct retro_game_info *game)
 {
+  struct retro_keyboard_callback keyb_cb = { keyboard_cb };
+  environ_cb(RETRO_ENVIRONMENT_SET_KEYBOARD_CALLBACK, &keyb_cb);
+
   // Configuration de la vidéo au format RGB565
   enum retro_pixel_format fmt = RETRO_PIXEL_FORMAT_RGB565;
   environ_cb(RETRO_ENVIRONMENT_SET_PIXEL_FORMAT, &fmt);
@@ -162,6 +189,31 @@ void retro_run(void)
   for (i = 0; i < NB_INSTR_PER_FRAME; i++)
   {
     run_next_opcode();
+  }
+
+  // Lecture de l'état des boutons de la manette
+  input_poll_cb();
+
+  // Simulation de l'état de la manette dans la mémoire de la machine
+  if (input_state_cb(0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_A))
+  {
+    ram[JOYPAD_ADDR] = 1;
+  }
+  else if(input_state_cb(0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_B))
+  {
+    ram[JOYPAD_ADDR] = 2;
+  }
+  else if(input_state_cb(0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_X))
+  {
+    ram[JOYPAD_ADDR] = 3;
+  }
+  else if(input_state_cb(0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_Y))
+  {
+    ram[JOYPAD_ADDR] = 4;
+  }
+  else
+  {
+    ram[JOYPAD_ADDR] = 0;
   }
 
   // Mise à jour de l'image de l'écran

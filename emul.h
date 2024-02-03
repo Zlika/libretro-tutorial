@@ -1,5 +1,7 @@
 // Mémoire 64ko
 extern unsigned char ram[];
+#define JOYPAD_ADDR   0x1F40
+#define KEYBOARD_ADDR 0x1F50
 
 void run_next_opcode(void);
 void reset(void);
