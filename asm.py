@@ -40,7 +40,11 @@ def assemble(asm_file, out_file):
     for line in lines:
         if is_label(line):
             labels[line] = address
+        elif line.startswith("DW"):
+            # Les instructions DW n'occupe que 2 octets en mémoire
+            address = address + 2
         else:
+            # Toutes les autres instructions occupent 4 octets en mémoire
             address = address + 4
     # Suppression des lignes de labels
     lines = list(filter(lambda x: not x.startswith('.'), lines))
