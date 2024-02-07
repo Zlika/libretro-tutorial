@@ -22,6 +22,7 @@ static retro_environment_t environ_cb = NULL;
 // Callback de mise à jour du buffer vidéo
 static retro_video_refresh_t video_cb = NULL;
 // Callbacks pour ajouter des échantillons au buffer audio
+static retro_audio_sample_t audio_cb = NULL;
 static retro_audio_sample_batch_t audio_batch_cb = NULL;
 // Callback pour mettre à jour l'état des entrées (clavier, manette)
 static retro_input_poll_t input_poll_cb = NULL;
@@ -29,6 +30,17 @@ static retro_input_poll_t input_poll_cb = NULL;
 static retro_input_state_t input_state_cb = NULL;
 // Buffer vidéo au format RGB565
 static unsigned short *video_buffer = NULL;
+
+#include <math.h>
+// Fréquence en Hz des notes Do, Ré, Mi, Fa, Sol, La, Si
+static float notes[] = { 0, 261.63, 293.66, 329.63, 349.23, 392.0, 440.0, 493.88 };
+// Nombre d'échantillons audio par image
+#define AUDIO_SAMPLES_PER_FRAME (AUDIO_SAMPLE_RATE / VIDEO_FPS)
+// Valeur courante de la phase du sinus
+static double sound_phase = 0;
+// Volume
+static int volume = 32767;
+#define M_PI 3.14159265358979323846
 
 unsigned retro_api_version(void)
 {
@@ -135,7 +147,7 @@ void retro_set_video_refresh(retro_video_refresh_t video_refresh)
 
 void retro_set_audio_sample(retro_audio_sample_t audio_sample)
 {
-  // Inutilisé, on utilisera à la place retro_set_audio_sample_batch
+  audio_cb = audio_sample;
 }
 
 void retro_set_audio_sample_batch(retro_audio_sample_batch_t audio_sample_batch)
@@ -214,6 +226,15 @@ void retro_run(void)
   else
   {
     ram[JOYPAD_ADDR] = 0;
+  }
+
+  // Génération des échantillons audio
+  for (i = 0; i < AUDIO_SAMPLES_PER_FRAME; i++)
+  {
+    int16_t sample = (int16_t) (volume * sin(sound_phase));
+    sound_phase += 2*M_PI*notes[ram[SOUND_ADDR]]/AUDIO_SAMPLE_RATE;
+    sound_phase = fmod(sound_phase, 2*M_PI);
+    audio_cb(sample, sample);
   }
 
   // Mise à jour de l'image de l'écran
