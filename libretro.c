@@ -1,5 +1,6 @@
 #include "libretro.h"
 #include "emul.h"
+#include <stdlib.h>
 #include <string.h>
 
 // Caractéristiques du système émulé
@@ -42,6 +43,11 @@ static double sound_phase = 0;
 static int volume = 32767;
 #define M_PI 3.14159265358979323846
 
+static const struct retro_variable prefs[] = {
+    { "mon_emu_volume", "Volume; 100%|90%|80%|70%|60%|50%|40%|30%|20%|10%|0%" },
+    { NULL, NULL }
+};
+
 unsigned retro_api_version(void)
 {
   return RETRO_API_VERSION;
@@ -67,6 +73,9 @@ void retro_set_environment(retro_environment_t env)
   // L'émulateur nécessite le chargement d'un support
   bool no_rom = false;
   env(RETRO_ENVIRONMENT_SET_SUPPORT_NO_GAME, &no_rom);
+
+  // Définition des options de l'émulateur
+  env(RETRO_ENVIRONMENT_SET_VARIABLES, (void *) prefs);
 
   environ_cb = env;
 }
@@ -226,6 +235,14 @@ void retro_run(void)
   else
   {
     ram[JOYPAD_ADDR] = 0;
+  }
+
+  // Lecture du volume dans les options de l'émulateur
+  struct retro_variable var = {0, 0};
+  var.key = "mon_emu_volume";
+  if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var))
+  {
+    volume = (32767 * atoi(var.value)) / 100;
   }
 
   // Génération des échantillons audio
