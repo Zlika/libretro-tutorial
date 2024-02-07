@@ -8,6 +8,7 @@ unsigned char cc;
 #define RAM_SIZE 0xFFFF
 #define USER_ADDR_START 0x2000
 unsigned char ram[RAM_SIZE];
+#define VIDEO_MEM_SIZE 0x1F40
 
 static short read_short_from_ram(int pos)
 {
@@ -16,8 +17,18 @@ static short read_short_from_ram(int pos)
 
 static void write_short_in_ram(int pos, short value)
 {
-  ram[pos] = (value & 0xFF00) >> 8;
-  ram[pos+1] = value & 0xFF;
+  if (pos < VIDEO_MEM_SIZE)
+  {
+    // Ecriture en mémoire vidéo : on considère la mémoire vidéo
+    // comme des mots de 16bits pour éviter les problèmes d'endianess
+    // entre la machine émulée et la machine émulant
+    ((short *)&ram[pos])[0] = value;
+  }
+  else
+  {
+    ram[pos] = (value & 0xFF00) >> 8;
+    ram[pos+1] = value & 0xFF;
+  }
 }
 
 // Exécute la prochaine instruction en mémoire
