@@ -21,7 +21,7 @@ static void write_short_in_ram(int pos, short value)
   {
     // Ecriture en mémoire vidéo : on considère la mémoire vidéo
     // comme des mots de 16bits pour éviter les problèmes d'endianess
-    // entre la machine émulée et la machine émulant
+    // entre la machine émulée et la machine émulante
     ((short *)&ram[pos])[0] = value;
   }
   else

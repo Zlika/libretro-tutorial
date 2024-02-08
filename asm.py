@@ -6,15 +6,22 @@ INIT_USER_ADDR = 0x2000
 labels = {}
 
 def is_label(token):
+    """Teste si la ligne représente un label."""
     return token.startswith('.')
 
 def is_address(token):
+    """Teste si l'élément représente une adresse."""
     return token.startswith('$')
 
 def is_register(token):
+    """ Teste si l'élément représente un registre."""
     return token.startswith('R')
 
 def get_operand_value(token):
+    """Renvoie un tuple (is_addr, value).
+       is_addr : True si la chaine de caractères représente une adresse
+                 (label ou valeur commençant par $)
+       value: valeur associée"""
     if is_label(token):
         return True, labels[token]
     if is_address(token):
@@ -22,11 +29,13 @@ def get_operand_value(token):
     return False, int(token, 0)
 
 def get_register_num(token):
+    """Retourne le numéro du registre Rx."""
     if is_register(token):
         return int(token[1])
     raise Exception(token + " n'est pas un registre")
 
 def int_to_16b_bytes(value):
+    """Retourne un objet bytes représentant la valeur en argument sur 2 octets."""
     return bytes([(value & 0xFF00) >> 8, value & 0xFF])
 
 def assemble(asm_file, out_file):
@@ -41,7 +50,7 @@ def assemble(asm_file, out_file):
         if is_label(line):
             labels[line] = address
         elif line.startswith("DW"):
-            # Les instructions DW n'occupe que 2 octets en mémoire
+            # Les instructions DW n'occupent que 2 octets en mémoire
             address = address + 2
         else:
             # Toutes les autres instructions occupent 4 octets en mémoire

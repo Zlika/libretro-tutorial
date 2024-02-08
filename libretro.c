@@ -33,7 +33,7 @@ static retro_input_state_t input_state_cb = NULL;
 static unsigned short *video_buffer = NULL;
 
 #include <math.h>
-// Fréquence en Hz des notes Do, Ré, Mi, Fa, Sol, La, Si
+// Fréquence en Hz des notes : silence, Do, Ré, Mi, Fa, Sol, La, Si
 static float notes[] = { 0, 261.63, 293.66, 329.63, 349.23, 392.0, 440.0, 493.88 };
 // Nombre d'échantillons audio par image
 #define AUDIO_SAMPLES_PER_FRAME (AUDIO_SAMPLE_RATE / VIDEO_FPS)
