@@ -1,13 +1,15 @@
 #include <string.h>
+#include "emul.h"
 
 // Définition des registres
 short r1, r2;
 unsigned short ip;
 unsigned char cc;
 // Mémoire 64ko
-#define RAM_SIZE 0xFFFF
-#define USER_ADDR_START 0x2000
 unsigned char ram[RAM_SIZE];
+// Adresse mémoire du début du programme
+#define USER_ADDR_START 0x2000
+// Taille de la mémoire vidéo
 #define VIDEO_MEM_SIZE 0x1F40
 
 static short read_short_from_ram(int pos)

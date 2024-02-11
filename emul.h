@@ -1,4 +1,5 @@
 // Mémoire 64ko
+#define RAM_SIZE 0xFFFF
 extern unsigned char ram[];
 #define JOYPAD_ADDR   0x1F40
 #define KEYBOARD_ADDR 0x1F50

@@ -273,11 +273,21 @@ void retro_deinit(void)
 
 void *retro_get_memory_data(unsigned id)
 {
+  switch (id)
+  {
+    case RETRO_MEMORY_SYSTEM_RAM:
+      return ram;
+  }
   return NULL;
 }
 
 size_t retro_get_memory_size(unsigned id)
 {
+  switch (id)
+  {
+    case RETRO_MEMORY_SYSTEM_RAM:
+      return RAM_SIZE;
+  }
   return 0;
 }
 
