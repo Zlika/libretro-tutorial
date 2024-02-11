@@ -64,7 +64,6 @@ def assemble(asm_file, out_file):
             if tokens[0] == "DW":
                 value = int(tokens[1], 0)
                 bin_file.write(int_to_16b_bytes(value))
-                bin_file.write(b'\x00\x00')
             elif tokens[0] == "LD":
                 reg = get_register_num(tokens[1])
                 is_addr, value = get_operand_value(tokens[2])
